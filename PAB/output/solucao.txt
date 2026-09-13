@@ -1,0 +1,27 @@
+FO: 217
+Berco: 1
+0 1 2 
+Berco: 2
+3 4 
+Berco: 3
+5 6 
+Berco: 4
+
+Berco: 5
+
+Berco: 6
+
+Berco: 7
+
+Berco: 8
+
+Berco: 9
+
+Berco: 10
+
+Berco: 11
+
+Berco: 12
+
+Berco: 13
+
