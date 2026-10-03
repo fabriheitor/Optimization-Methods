@@ -155,3 +155,80 @@ void ler_dados(char* arq)
         fscanf(f, "%d", &vet_cap_moc[i]);
     fclose(f);
 }
+
+void heu_con_ale(Solucao& s)
+{
+    for (int j = 0; j < num_obj; j++)
+        s.vet_sol[j] = rand() % (num_moc + 1) - 1;
+}
+
+void heu_con_gul(Solucao& s)
+{
+    memset(&s.vet_pesos, 0, sizeof(s.vet_pesos));
+    memset(&s.vet_sol, -1, sizeof(s.vet_sol));
+    for (int j = 0; j < num_obj; j++)
+    {
+        int obj = vet_ind_obj_ord[j];
+        for (int i = 0; i < num_moc; i++)
+        {
+            if (vet_pes_obj[obj] + s.vet_pesos[i] <= vet_cap_moc[i])
+            {
+                s.vet_sol[obj] = i;
+                s.vet_pesos[i] += vet_pes_obj[obj];
+                break;
+            }
+        }
+    }
+}
+
+void heu_con_ale_gul(Solucao& s, const double per_ale)
+{
+    int vet_aux[MAX_OBJ];
+    memcpy(&vet_aux, &vet_ind_obj_ord, sizeof(vet_ind_obj_ord));
+    int qtde = MAX(1, (per_ale / 100) * num_obj);
+    for (int i = 0; i < qtde; i++)
+    {
+        int pos = i + rand() % (num_obj - i);
+        int aux = vet_aux[i];
+        vet_aux[i] = vet_aux[pos];
+        vet_aux[pos] = aux;
+    }
+    // codigo da gulosa
+    memset(&s.vet_pesos, 0, sizeof(s.vet_pesos));
+    memset(&s.vet_sol, -1, sizeof(s.vet_sol));
+    for (int j = 0; j < num_obj; j++)
+    {
+        int obj = vet_aux[j]; // troquei o vetor ordenado pelo embaralhado
+        for (int i = 0; i < num_moc; i++)
+        {
+            if (vet_pes_obj[obj] + s.vet_pesos[i] <= vet_cap_moc[i])
+            {
+                s.vet_sol[obj] = i;
+                s.vet_pesos[i] += vet_pes_obj[obj];
+                break;
+            }
+        }
+    }
+}
+
+void ordenar_objetos()
+{
+    for (int j = 0; j < num_obj; j++)
+        vet_ind_obj_ord[j] = j;
+    int flag = 1;
+    while (flag)
+    {
+        flag = 0;
+        for (int j = 0; j < num_obj - 1; j++)
+        {
+            if ((double)vet_val_obj[vet_ind_obj_ord[j]] / vet_pes_obj[vet_ind_obj_ord[j]] <
+                (double)vet_val_obj[vet_ind_obj_ord[j + 1]] / vet_pes_obj[vet_ind_obj_ord[j + 1]])
+            {
+                int aux = vet_ind_obj_ord[j];
+                vet_ind_obj_ord[j] = vet_ind_obj_ord[j + 1];
+                vet_ind_obj_ord[j + 1] = aux;
+                flag = 1;
+            }
+        }
+    }
+}
