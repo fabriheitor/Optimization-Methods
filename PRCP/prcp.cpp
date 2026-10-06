@@ -82,6 +82,47 @@ void escrever_sol(char*arq, Solucao& s){
 
 }
 
+void heu_con_ale(Solucao& s){
+    for(int i = 0; i < N; i++)
+        s.vet_sol[i] = rand() % M;
+}
+
+void heu_con_gul(Solucao& s){
+    // Inicializa todos os pontos como não posicionados (-1)
+    for(int i = 0; i < N; i++){
+        s.vet_sol[i] = -1;
+    }
+
+    for(int i = 0; i < N; i++){
+        // Padrão: caso nenhuma posição seja 100% livre,
+        // assume a posição 0 e deixa a penalização para a calcular_FO
+        s.vet_sol[i] = 0;
+
+        for(int p = 0; p < M; p++){
+            int id = (i * M) + p;
+            int tem_conflito = 0;
+
+            // Verifica se a posição p conflita com algum ponto já colocado
+            for(int j = 0; j < vet_qtd_conf[id]; j++){
+                int id2 = mat_conf[id][j];
+                int pt = id2 / M;
+                int pos_viz = id2 % M;
+
+                // Conflita com um ponto que já foi rotulado?
+                if(s.vet_sol[pt] == pos_viz){
+                    tem_conflito = 1;
+                    break;
+                }
+            }
+
+            // Exatamente como no PMM: se não viola restrição, aloca e para (break)
+            if(!tem_conflito){
+                s.vet_sol[i] = p;
+                break;
+            }
+        }
+    }
+}
 
 int main(){
 
