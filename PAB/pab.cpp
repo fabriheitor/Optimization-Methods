@@ -204,6 +204,29 @@ void heu_con_ale_gul(SolucaoPAB& s, const double per_ale){
 
 }
 
+void gerar_vizinha(SolucaoPAB& s){
+    int ber_ori;
+    do{
+        ber_ori = rand() % bercos;
+    }while(s.qtd_berco[ber_ori] == 0);
+
+    int pos_navio = rand() % s.qtd_berco[ber_ori];
+    int nav = s.mat_seq_bercos[ber_ori][pos_navio];
+
+    for(int i = pos_navio; i < s.qtd_berco[ber_ori] - 1; i++){
+        s.mat_seq_bercos[ber_ori][i] = s.mat_seq_bercos[ber_ori][i+1];
+    }
+    s.qtd_berco[ber_ori]--;
+
+    int ber_des;
+    do{
+        ber_des = rand() % bercos;
+    }while(mat_tempo_atendimento[ber_des][nav] == 0 || ber_des == ber_ori && pos_navio == s.qtd_berco[ber_des]);
+    
+    s.mat_seq_bercos[ber_des][s.qtd_berco[ber_des]] = nav;
+    s.qtd_berco[ber_des]++;
+}
+
 int main (){
 
     srand(time(NULL));   // semente diferente a cada execucao

@@ -31,3 +31,4 @@ void ordenar_objetos();
 void heu_ale_gul(SolucaoPAB& s);
 void heu_con_ale_gul(SolucaoPAB& s, const double per_ale);
 void heu_con_gul(SolucaoPAB& s);
+void gerar_vizinha(SolucaoPAB& s);
