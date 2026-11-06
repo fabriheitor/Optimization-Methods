@@ -221,7 +221,8 @@ void gerar_vizinha(SolucaoPAB& s){
     int ber_des;
     do{
         ber_des = rand() % bercos;
-    }while(mat_tempo_atendimento[ber_des][nav] == 0 || ber_des == ber_ori && pos_navio == s.qtd_berco[ber_des]);
+    }while(mat_tempo_atendimento[ber_des][nav] == 0 || 
+        ber_des == ber_ori && pos_navio == s.qtd_berco[ber_des]);
     
     s.mat_seq_bercos[ber_des][s.qtd_berco[ber_des]] = nav;
     s.qtd_berco[ber_des]++;

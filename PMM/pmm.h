@@ -21,13 +21,19 @@ int num_moc;
 int vet_val_obj[MAX_OBJ];
 int vet_pes_obj[MAX_OBJ];
 int vet_cap_moc[MAX_MOC];
-
 int vet_ind_obj_ord[MAX_OBJ];
 
+void heu_bl_rand(Solucao& s, const int iter);
+void heu_bl_mm(Solucao& s);
+void heu_bl_pm(Solucao& s);
+void heu_bl_pm_nd(Solucao& s);
+
+void gerar_vizinha(Solucao& s);
 void heu_con_ale(Solucao& s);
 void heu_con_gul(Solucao& s);
 void heu_con_ale_gul(Solucao& s, const double per_ale);
 void ordenar_objetos();
+
 
 void calcular_FO(Solucao& s);
 void escrever_sol(Solucao& s);
