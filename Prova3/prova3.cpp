@@ -57,32 +57,41 @@ int main()
     return 0;
 }
 
-void heu_bl_rand(Solucao& s, const int iter){
+void heu_bl_rand(Solucao& s, const int iterMAX)
+{
     Solucao aux;
     INICIO : ;
-    for(int i = 0; i < iter; i++){
-        memcpy(&aux, &s, sizeof(s));
+    for(int i = 0; i < iterMAX; i++)
+    {
+        memcpy(&aux, &s, sizeof(Solucao));
         gerar_vizinha(aux);
         calcular_FO(aux);
-        if(aux.fo < s.fo){
-            memcpy(&s, &aux, sizeof(aux));
+        if(s.fo > aux.fo)
+        {
+            memcpy(&s,&aux,sizeof(Solucao));
             goto INICIO;
         }
     }
+    memcpy(&s,&aux,sizeof(Solucao));
 }
 
-void heu_bl_pm(Solucao& s){
-    double mel_fo = s.fo;
+void heu_bl_pm(Solucao& s)
+{
+    Solucao aux;
     INICIO : ;
-    for(int i = 0; i < num_hubs; i++){
-        double hub_ori = s.vet_sol[i];
-        double fo_ori = s.fo;
-        for(int j = num_hubs; j < num_nos; j++){
+    int mel_fo = s.fo;
+    for(int i = 0; i < num_hubs; i++)
+    {
+        int fo_ori = s.fo;
+        int hub_ori = s.vet_sol[i];
+
+        calcular_FO(s);
+        for(int j = num_hubs; j <= num_nos; j++)
+        {
             s.vet_sol[i] = s.vet_sol[j];
             s.vet_sol[j] = hub_ori;
-
-            calcular_FO(s);
-            if(s.fo < mel_fo){
+            if(mel_fo > s.fo)
+            {
                 goto INICIO;
             }
 
@@ -90,8 +99,10 @@ void heu_bl_pm(Solucao& s){
             s.vet_sol[i] = hub_ori;
             s.fo = fo_ori;
         }
+
     }
 }
+
 
 void heu_bl_mm(Solucao& s)
 {
@@ -135,6 +146,7 @@ void heu_bl_mm(Solucao& s)
     }
 }
 
+
 // Nao-Deterministica 
 void heu_bl_pm_nd(Solucao& s)
 {
@@ -171,12 +183,10 @@ void heu_bl_pm_nd(Solucao& s)
     }
 }
 
-// ============================================================================
-// Geracao de Vizinha e Heuristicas Construtivas (adaptadas do PMM)
-// ============================================================================
+
 void gerar_vizinha(Solucao& s)
 {
-    // Sorteia um hub (0 .. p-1) e um nao-hub (p .. n-1) e faz a troca
+    
     int pos_hub = rand() % num_hubs;
     int pos_nao_hub = num_hubs + rand() % (num_nos - num_hubs);
 
@@ -225,8 +235,7 @@ void heu_con_ale_gul(Solucao& s, const double per_ale)
 
 void ordenar_objetos()
 {
-    // Ordena os nos em ordem crescente da distancia total para todos os demais
-    // (nos mais centrais ficam nas primeiras posicoes para serem escolhidos como hubs)
+    
     for (int i = 0; i < num_nos; i++)
         vet_ind_nos_ord[i] = i;
 
@@ -247,16 +256,12 @@ void ordenar_objetos()
     }
 }
 
-// ============================================================================
-// Calculo de FO e Manipulacao de Dados
-// ============================================================================
+
 void calcular_FO(Solucao& s)
 {
     s.fo = 0.0;
 
-    // Para cada par de nos (i, j) em N x N:
-    // O custo de transporte entre i e j e o MENOR custo passando pelos hubs (k, l) instalados.
-    // A FO e o MAIOR custo t_ij dentre todos os pares (i, j).
+    
     for (int i = 0; i < num_nos; i++)
     {
         for (int j = i; j < num_nos; j++)

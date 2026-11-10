@@ -21,7 +21,6 @@ double mat_custo[MAX_NOS][MAX_NOS];
 double vet_dist_total[MAX_NOS];
 int vet_ind_nos_ord[MAX_NOS];
 
-
 void heu_bl_rand(Solucao& s, const int iter);
 void heu_bl_rand(Solucao& s);
 void heu_bl_pm(Solucao& s);
