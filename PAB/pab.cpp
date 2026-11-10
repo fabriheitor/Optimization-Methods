@@ -231,26 +231,53 @@ void gerar_vizinha(SolucaoPAB& s){
 void heu_bl_rand(SolucaoPAB& s, const int iterMAX){
     SolucaoPAB aux;
     INICIO : ;
-    memcpy(&aux, &s, sizeof(SolucaoPAB));
     for(int i = 0; i < iterMAX; i++)
     {
+        memcpy(&aux, &s, sizeof(SolucaoPAB));
         gerar_vizinha(aux);
         calcularFO(aux);
         if(aux.fo < s.fo){
             memcpy(&s, &aux, sizeof(SolucaoPAB));
             goto INICIO;
         }
+
+        memcpy(&s, &aux, sizeof(SolucaoPAB));
     }
+}
+
+void heu_bl_pm(SolucaoPAB& s)
+{
+    INICIO : ;
+    int mel_fo = s.fo;
+    for(int i = 0; i < navios; i++)
+    {
+        for(int j = 0; j < bercos; j++)
+        {
+            int nav_ori = s.mat_seq_bercos[j][i];
+            int fo_ori = s.fo;
+
+            s.mat_seq_bercos[j][i] = s.mat_seq_bercos[j+1][i];
+            calcularFO(s);
+            if(s.fo < mel_fo)
+            {
+                goto INICIO;
+            }     
+            s.mat_seq_bercos[j][i] = nav_ori;
+            s.fo = fo_ori;
+        }
+    }
+
+
 }
 
 
 int main (){
 
-    srand(time(NULL));   // semente diferente a cada execucao
+    srand(time(NULL));   
 
     char arq[50];
 
-    // tenta caminhos comuns (a IDE pode executar a partir de outra pasta)
+   
     const char* caminhos[] = {"i01.txt", "../i01.txt", "PAB/i01.txt", "../PAB/i01.txt"};
     int achou = 0;
     for(int c = 0; c < 4; c++){
@@ -276,6 +303,9 @@ memset(sol.mat_seq_bercos, -1, sizeof(sol.mat_seq_bercos));
 memset(sol.qtd_berco, 0, sizeof(sol.qtd_berco));
 
     heu_con_ale_gul(sol, 0);
+    calcularFO(sol);
+
+    heu_bl_rand(sol, 100);
     calcularFO(sol);
 
     strcpy(arq, "");
