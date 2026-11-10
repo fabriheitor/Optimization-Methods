@@ -228,6 +228,22 @@ void gerar_vizinha(SolucaoPAB& s){
     s.qtd_berco[ber_des]++;
 }
 
+void heu_bl_rand(SolucaoPAB& s, const int iterMAX){
+    SolucaoPAB aux;
+    INICIO : ;
+    memcpy(&aux, &s, sizeof(SolucaoPAB));
+    for(int i = 0; i < iterMAX; i++)
+    {
+        gerar_vizinha(aux);
+        calcularFO(aux);
+        if(aux.fo < s.fo){
+            memcpy(&s, &aux, sizeof(SolucaoPAB));
+            goto INICIO;
+        }
+    }
+}
+
+
 int main (){
 
     srand(time(NULL));   // semente diferente a cada execucao
