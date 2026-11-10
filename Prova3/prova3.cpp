@@ -135,9 +135,7 @@ void heu_bl_mm(Solucao& s)
     }
 }
 
-// ============================================================================
-// Busca Local de Primeira Melhora Nao-Deterministica (adaptada do PMM)
-// ============================================================================
+// Nao-Deterministica 
 void heu_bl_pm_nd(Solucao& s)
 {
     int vet_aux[MAX_NOS];

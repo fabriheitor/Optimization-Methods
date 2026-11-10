@@ -249,26 +249,114 @@ void heu_bl_pm(SolucaoPAB& s)
 {
     INICIO : ;
     int mel_fo = s.fo;
-    for(int i = 0; i < navios; i++)
+    for(int i = 0; i < bercos; i++)
     {
-        for(int j = 0; j < bercos; j++)
+        for(int j = 0; j < s.qtd_berco[i]; j++)
         {
-            int nav_ori = s.mat_seq_bercos[j][i];
-            int fo_ori = s.fo;
-
-            s.mat_seq_bercos[j][i] = s.mat_seq_bercos[j+1][i];
-            calcularFO(s);
-            if(s.fo < mel_fo)
+            int nav = s.mat_seq_bercos[i][j];
+            SolucaoPAB aux;
+            memcpy(&aux, &s, sizeof(SolucaoPAB));
+            for(int ber_des = 0; ber_des < bercos; ber_des++)
             {
-                goto INICIO;
-            }     
-            s.mat_seq_bercos[j][i] = nav_ori;
-            s.fo = fo_ori;
+
+                if(mat_tempo_atendimento[ber_des][nav] == 0)   
+                    continue;
+
+                int qtd_dest = s.qtd_berco[ber_des];
+                if(ber_des == i)
+                    qtd_dest--;  
+
+                for(int pos_dest = 0; pos_dest <= qtd_dest; pos_dest++)
+                {
+                    if((i == ber_des) && (j == pos_dest))
+                    continue;
+
+                    //remove navio da origem
+
+                    //insere navio no destino
+
+                    calcularFO(s);
+                    if(s.fo < mel_fo)
+                        goto INICIO;                        
+
+                    memcpy(&s, &aux, sizeof(SolucaoPAB));
+                }
+            }
+        }
+    }
+}
+
+void heu_bl_mm(SolucaoPAB& s)
+{
+    INICIO : ;
+    int mel_bo = -1, mel_po = -1, mel_bd = -1, mel_pd = -1;
+    int mel_fo = s.fo;
+    for(int i = 0; i < bercos; i++)
+    {
+        for(int j = 0; j < s.qtd_berco[i]; j++)
+        {
+            int nav = s.mat_seq_bercos[i][j];
+            SolucaoPAB aux;
+            memcpy(&aux, &s, sizeof(SolucaoPAB));
+            for(int ber_des = 0; ber_des < bercos; ber_des++)
+            {
+
+                if(mat_tempo_atendimento[ber_des][nav] == 0)   
+                    continue;
+
+                int qtd_dest = s.qtd_berco[ber_des];
+                if(ber_des == i)
+                    qtd_dest--;  
+
+                for(int pos_dest = 0; pos_dest <= qtd_dest; pos_dest++)
+                {
+                    if((i == ber_des) && (j == pos_dest))
+                    continue;
+
+                    //remove navio da origem
+                    for(int k = j; k < s.qtd_berco[i] - 1; k++)
+                    s.mat_seq_bercos[i][k] = s.mat_seq_bercos[i][k+1];
+                    s.qtd_berco[i]--;
+
+                    //insere navio no destino
+                    for(int k = s.qtd_berco[ber_des]; k > pos_dest; k--)
+                    s.mat_seq_bercos[ber_des][k] = s.mat_seq_bercos[ber_des][k-1];
+                    s.mat_seq_bercos[ber_des][pos_dest] = nav;
+                    s.qtd_berco[ber_des]++;
+
+                    calcularFO(s);
+                    if(s.fo < mel_fo)
+                        mel_fo = s.fo;
+                        mel_bo = i;
+                        mel_po = j;
+                        mel_bd = ber_des;
+                        mel_pd = pos_dest;                        
+
+                    memcpy(&s, &aux, sizeof(SolucaoPAB));
+                }
+            }
         }
     }
 
+    
+    if(mel_bo != -1)                                        
+    {
+        int nav = s.mat_seq_bercos[mel_bo][mel_po];
 
+        for(int k = mel_po; k < s.qtd_berco[mel_bo] - 1; k++)
+            s.mat_seq_bercos[mel_bo][k] = s.mat_seq_bercos[mel_bo][k+1];
+        s.qtd_berco[mel_bo]--;
+
+        for(int k = s.qtd_berco[mel_bd]; k > mel_pd; k--)
+            s.mat_seq_bercos[mel_bd][k] = s.mat_seq_bercos[mel_bd][k-1];
+        s.mat_seq_bercos[mel_bd][mel_pd] = nav;
+        s.qtd_berco[mel_bd]++;
+
+        calcularFO(s);
+        goto INICIO;                                        
+    }
 }
+
 
 
 int main (){
